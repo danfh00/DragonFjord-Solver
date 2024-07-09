@@ -49,12 +49,8 @@ T_SHAPE = [
 ]
 
 
-def make_rect_grid(grid_width, grid_height) -> list[list]:
-    grid = [['X' for _ in range(grid_width)] for _ in range(grid_height)]
-    return grid
-
-
-def make_todays_grid():
+def make_todays_grid() -> list[list[str]]:
+    """Create a grid with the current day and month removed."""
     todays_date = date.today()
     day = todays_date.day
     month = todays_date.month
@@ -77,17 +73,8 @@ def make_todays_grid():
     return grid
 
 
-def make_custom_grid() -> list[list]:
-    return [["X", "X", "X", "X", "X", "X", " "],
-            [" ", "X", "X", "X", "X", "X", " "],
-            ["X", "X", "X", "X", "X", "X", "X"],
-            [" ", "X", "X", "X", "X", "X", "X"],
-            ["X", "X", "X", "X", "X", "X", "X"],
-            ["X", "X", "X", "X", "X", "X", "X"],
-            ["X", "X", "X", " ", " ", " ", " "]]
-
-
-def can_place(grid, block, top_left_x, top_left_y):
+def can_place(grid, block, top_left_x, top_left_y) -> bool:
+    """Check if a block can be placed on the grid at position (x, y)."""
     block_height = len(block)
     block_width = len(block[0])
     grid_height = len(grid)
@@ -107,7 +94,8 @@ def can_place(grid, block, top_left_x, top_left_y):
     return True
 
 
-def place(grid, block, top_left_x, top_left_y):
+def place(grid, block, top_left_x, top_left_y) -> list:
+    """Place a block on the grid at position (x, y) and return the new grid."""
     new_grid = [row[:] for row in grid]
     for i, row in enumerate(block):
         for j, cell in enumerate(row):
@@ -118,22 +106,26 @@ def place(grid, block, top_left_x, top_left_y):
     return new_grid
 
 
-def print_grid(grid):
+def print_grid(grid) -> None:
+    """Print the grid."""
     for row in grid:
         print(" ".join(row))
     print(" ")
 
 
-def rotate(block):
+def rotate(block) -> list[list[str]]:
+    """Rotate a block 90 degrees clockwise."""
     return [list(row) for row in zip(*block[::-1])]
 
 
-def mirror(block):
+def mirror(block) -> list:
+    """Mirror a block horizontally."""
     return [row[::-1] for row in block]
 
 
 @lru_cache(maxsize=None)
 def get_orientations(block) -> list[list[list]]:
+    """Get all unique orientations of a block."""
     orientations = set()
     current = block
     for _ in range(4):
@@ -146,11 +138,13 @@ def get_orientations(block) -> list[list[list]]:
     return [list(map(list, orientation)) for orientation in orientations]
 
 
-def recursion(grid, shapes, blocks_placed=0, solutions=[], attempts_counter=None):
+def recursion(grid, shapes, blocks_placed=0, solutions=[], attempts_counter=None) -> None | bool:
+    """Recursively try to place all shapes on the grid."""
     if attempts_counter is None:
         attempts_counter = [0]
     if blocks_placed == len(shapes):
         solutions.add(tuple(tuple(row) for row in grid))
+        print(f"Solution {len(solutions)}:")
         print_grid(grid)
         return
 
