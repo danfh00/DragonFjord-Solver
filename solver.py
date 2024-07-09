@@ -143,8 +143,8 @@ def recursion(grid, shapes, blocks_placed=0, solutions=[], attempts_counter=None
     if attempts_counter is None:
         attempts_counter = [0]
     if blocks_placed == len(shapes):
-        solutions.add(tuple(tuple(row) for row in grid))
-        print(f"Solution {len(solutions)}:")
+        solutions[0] += 1
+        print(f"Solution {solutions[0]}:")
         print_grid(grid)
         return
 
@@ -171,10 +171,9 @@ if __name__ == "__main__":
 
     print_grid(date_grid)
 
-    solutions = set()
-
     start_time = time.time()
 
+    solutions = [0]
     attempts_counter = [0]
 
     recursion(date_grid, shapes, solutions=solutions,
@@ -182,11 +181,7 @@ if __name__ == "__main__":
 
     end_time = time.time()
 
-    if solutions:
-        for i, solution in enumerate(solutions):
-            print(f"Solution {i+1}:")
-            print_grid(solution)
-    else:
+    if not solutions[0]:
         print("Failed to place all shapes on the grid")
 
     execution_time = end_time - start_time
