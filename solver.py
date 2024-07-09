@@ -1,3 +1,4 @@
+"""Script for solving DragonFjord A-Puzzle-A-Day for today's date"""
 import time
 from functools import lru_cache
 from datetime import date
@@ -89,7 +90,7 @@ def can_place(grid, block, top_left_x, top_left_y) -> bool:
                 y = top_left_y + i
                 x = top_left_x + j
 
-                if not (grid[y][x].isnumeric()):
+                if not grid[y][x].isnumeric():
                     return False
     return True
 
@@ -138,8 +139,10 @@ def get_orientations(block) -> list[list[list]]:
     return [list(map(list, orientation)) for orientation in orientations]
 
 
-def recursion(grid, shapes, blocks_placed=0, solutions=[], attempts_counter=None) -> None | bool:
+def recursion(grid, shapes, blocks_placed=0, solutions=None, attempts_counter=None) -> None:
     """Recursively try to place all shapes on the grid."""
+    if solutions is None:
+        solutions = [0]
     if attempts_counter is None:
         attempts_counter = [0]
     if blocks_placed == len(shapes):
@@ -152,38 +155,39 @@ def recursion(grid, shapes, blocks_placed=0, solutions=[], attempts_counter=None
     orientations = get_orientations(tuple(map(tuple, current_shape)))
 
     for orientation in orientations:
-        for y in range(len(grid)):
-            for x in range(len(grid[y])):
+        for y, row in enumerate(grid):
+            for x in range(len(row)):
                 if can_place(grid, orientation, x, y):
                     new_grid = place(grid, orientation, x, y)
                     attempts_counter[0] += 1
-                    if recursion(new_grid, shapes, blocks_placed + 1, solutions, attempts_counter):
-                        return True
+                    recursion(new_grid, shapes, blocks_placed +
+                              1, solutions, attempts_counter)
 
-    return False
+    return
 
 
 if __name__ == "__main__":
     date_grid = make_todays_grid()
 
-    shapes = [L_SHAPE, U_SHAPE, S_SHAPE, D_SHAPE,
-              R_SHAPE, B_SHAPE, F_SHAPE, T_SHAPE]
+    all_shapes = [L_SHAPE, U_SHAPE, S_SHAPE, D_SHAPE,
+                  R_SHAPE, B_SHAPE, F_SHAPE, T_SHAPE]
 
+    print("Starting grid:")
     print_grid(date_grid)
 
     start_time = time.time()
 
-    solutions = [0]
-    attempts_counter = [0]
+    solutions_found = [0]
+    attempts = [0]
 
-    recursion(date_grid, shapes, solutions=solutions,
-              attempts_counter=attempts_counter)
+    recursion(date_grid, all_shapes, solutions=solutions_found,
+              attempts_counter=attempts)
 
     end_time = time.time()
 
-    if not solutions[0]:
+    if not solutions_found[0]:
         print("Failed to place all shapes on the grid")
 
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.4f} seconds")
-    print(f"Total shapes placement attempts: {attempts_counter[0]}")
+    print(f"Total shapes placement attempts: {attempts[0]}")
