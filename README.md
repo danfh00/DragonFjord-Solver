@@ -1,0 +1,1 @@
+A solver for the DragonFjord A-Puzzle-A-Day puzzle
